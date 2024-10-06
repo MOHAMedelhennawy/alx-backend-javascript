@@ -1,5 +1,5 @@
 /**
- * To use the HTTP server and client one must `require('node:http')`.
+ * To use the HTTP server and client one must import the `node:http` module.
  *
  * The HTTP interfaces in Node.js are designed to support many features
  * of the protocol which have been traditionally difficult to use.
@@ -231,7 +231,7 @@ declare module "http" {
     }
     interface ServerOptions<
         Request extends typeof IncomingMessage = typeof IncomingMessage,
-        Response extends typeof ServerResponse = typeof ServerResponse,
+        Response extends typeof ServerResponse<InstanceType<Request>> = typeof ServerResponse,
     > {
         /**
          * Specifies the `IncomingMessage` class to be used. Useful for extending the original `IncomingMessage`.
@@ -315,14 +315,14 @@ declare module "http" {
     }
     type RequestListener<
         Request extends typeof IncomingMessage = typeof IncomingMessage,
-        Response extends typeof ServerResponse = typeof ServerResponse,
+        Response extends typeof ServerResponse<InstanceType<Request>> = typeof ServerResponse,
     > = (req: InstanceType<Request>, res: InstanceType<Response> & { req: InstanceType<Request> }) => void;
     /**
      * @since v0.1.17
      */
     class Server<
         Request extends typeof IncomingMessage = typeof IncomingMessage,
-        Response extends typeof ServerResponse = typeof ServerResponse,
+        Response extends typeof ServerResponse<InstanceType<Request>> = typeof ServerResponse,
     > extends NetServer {
         constructor(requestListener?: RequestListener<Request, Response>);
         constructor(options: ServerOptions<Request, Response>, requestListener?: RequestListener<Request, Response>);
@@ -1447,7 +1447,7 @@ declare module "http" {
      * To configure any of them, a custom {@link Agent} instance must be created.
      *
      * ```js
-     * const http = require('node:http');
+     * import http from 'node:http';
      * const keepAliveAgent = new http.Agent({ keepAlive: true });
      * options.agent = keepAliveAgent;
      * http.request(options, onResponseCallback)
@@ -1553,11 +1553,11 @@ declare module "http" {
      */
     function createServer<
         Request extends typeof IncomingMessage = typeof IncomingMessage,
-        Response extends typeof ServerResponse = typeof ServerResponse,
+        Response extends typeof ServerResponse<InstanceType<Request>> = typeof ServerResponse,
     >(requestListener?: RequestListener<Request, Response>): Server<Request, Response>;
     function createServer<
         Request extends typeof IncomingMessage = typeof IncomingMessage,
-        Response extends typeof ServerResponse = typeof ServerResponse,
+        Response extends typeof ServerResponse<InstanceType<Request>> = typeof ServerResponse,
     >(
         options: ServerOptions<Request, Response>,
         requestListener?: RequestListener<Request, Response>,
@@ -1902,6 +1902,19 @@ declare module "http" {
      * Defaults to 16KB. Configurable using the `--max-http-header-size` CLI option.
      */
     const maxHeaderSize: number;
+    /**
+     * A browser-compatible implementation of [WebSocket](https://nodejs.org/docs/latest/api/http.html#websocket).
+     * @since v22.5.0
+     */
+    const WebSocket: import("undici-types").WebSocket;
+    /**
+     * @since v22.5.0
+     */
+    const CloseEvent: import("undici-types").CloseEvent;
+    /**
+     * @since v22.5.0
+     */
+    const MessageEvent: import("undici-types").MessageEvent;
 }
 declare module "node:http" {
     export * from "http";
